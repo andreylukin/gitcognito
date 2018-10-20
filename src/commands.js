@@ -120,12 +120,14 @@ function decrypt_tokens(string,password) {
   let begin = "[[[[";
   let end = "]]]]";
   var array = string.split(begin);
-  // console.log(array);
   process.stdout.write(array.map(function(item){
-    var again = item.split(end);
-    if(again.length > 1) {
-      again[0] = decrypt(again[0],password);
-    }
-    return again.join("");
+    return decrypt_token(item, begin, end, password);
   }).join(""));
 }
+
+function decrypt_token(string, beingToken, endToken, password) {
+  let encodedString = string.split(beingToken)[1].split(endToken)[0]
+  return decrypt(encodedString, password);
+}
+
+
