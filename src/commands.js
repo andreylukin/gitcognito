@@ -136,11 +136,4 @@ function decrypt_tokens(string,password) {
   }).join(""));
 }
 
-function decrypt_token(string, beginToken, endToken, password) {
-  if(string.split(beginToken).length > 1) {
-    let encodedString = string.split(beginToken)[1].split(endToken)[0]
-    return decrypt(encodedString, password);
-  } else {
-    return string;
-  }
-}
+
