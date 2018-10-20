@@ -55,65 +55,60 @@ module.exports = {
     // console.log("{"+path+"}");
     var files = getFiles();
     console.log(files);
-    //
-    // files.forEach(function(file){
-    //   encryptFile(file,password);
-    // });
+    
+    files.forEach(function(file){
+      encryptFile(file,password);
+    });
 
-    // setTimeout(function(){
+    
+    
+    
+    
+    
+    
+    
+    // TODO : copy files from editing directory to encrypted repo
     //
-    //
-    //
-    //
-    //
-    //
-    //       // TODO : copy files from editing directory to encrypted repo
-    //       //
-    //       // console.log(args);
-    //
-    //       line = "git "+args._[0] + " " + args._.splice(1).map(function(str){
-    //           if(!(str === '.')) {
-    //             return "\""+encrypt(str,password)+"\"";
-    //           } else {
-    //             return str;
-    //           }
-    //         }).join(" ");
-    //
-    //        // + " "+args._.splice(1,0).forEach(function(element){
-    //       //   return encrypt(element);
-    //       // })
-    //       // .join(" ");
-    //       for(var p in args) {
-    //         if(!(p==="_")) {
-    //           if(args.hasOwnProperty(p)) {
-    //             if(p.length > 1) {
-    //               line += " --";
-    //             } else {
-    //               line += " -";
-    //             }
-    //               line += p + ' "' + encrypt(args[p],password)+'" ';
-    //           }
-    //         }
-    //       }
-    //
-    //       // console.log("Running command: <"+line+">");
-    //       shell.cd("./.git_repo");
-    //
-    //       var run_command = shell.exec(line,{stdio: "inherit"});
-    //
-    //       if(run_command.stdout.length > 0) {
-    //         decrypt_tokens(run_command.stdout,password);
-    //       } else if(run_command.stderr.length > 0) {
-    //         decrypt_tokens(run_command.stderr,password);
-    //       }
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    // },1000)
+    // console.log(args);
+
+    line = "git "+args._[0] + " " + args._.splice(1).map(function(str){
+        if(!(str === '.')) {
+          return "\""+encrypt(str,password)+"\"";
+        } else {
+          return str;
+        }
+      }).join(" ");
+
+      // + " "+args._.splice(1,0).forEach(function(element){
+    //   return encrypt(element);
+    // })
+    // .join(" ");
+    for(var p in args) {
+      if(!(p==="_")) {
+        if(args.hasOwnProperty(p)) {
+          if(p.length > 1) {
+            line += " --";
+          } else {
+            line += " -";
+          }
+            line += p + ' "' + encrypt(args[p],password)+'" ';
+        }
+      }
+    }
+
+    // console.log("Running command: <"+line+">");
+    shell.cd("./.git_repo");
+
+    var run_command = shell.exec(line,{stdio: "inherit"});
+
+    if(run_command.stdout.length > 0) {
+      decrypt_tokens(run_command.stdout,password);
+    } else if(run_command.stderr.length > 0) {
+      decrypt_tokens(run_command.stderr,password);
+    }
+
+
+
 
 
   }
