@@ -19,9 +19,8 @@ function encryptFile(fileToEncrypt,key) {
         terminal: false
       });
     readFile
-      .on('line', function(line) {
-          this.output.write(`${encrypt(line, key)}\n`);
-          // console.log("written");
+      .on('line', async function(line) {
+          await this.output.write(`${encrypt(line, key)}\n`);
     })
       .on('close', function() {
         // console.log(`Created "${this.output.path}"`);
