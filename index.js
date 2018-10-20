@@ -20,8 +20,10 @@ module.exports = () => {
 
 
     // console.log(shell.exec("pwd").stdout);
+    var count = 0;
     while(shell.test('-f', '.gcn') == false) {
       shell.cd("../");
+      count++;
       // console.log(shell.exec("pwd").stdout);
       if(shell.exec("pwd").stdout === "/\n") {
         console.log("Error: not a gcn repo");
@@ -48,7 +50,7 @@ module.exports = () => {
     if(command === 'clone') {
       parse.clone(args,password);
     } else {
-      parse.other(args,password,shell)
+      parse.other(args,password,shell,count)
     }
 
   }

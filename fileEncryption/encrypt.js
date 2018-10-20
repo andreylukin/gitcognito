@@ -7,7 +7,7 @@ function encrypt(text, password){
   crypted += cipher.final('hex');
   let begin = ";};";
   let end = "{;}";
-return begin+crypted+end;
+  return begin+crypted+end;
 }
 
 function decrypt(text, password){

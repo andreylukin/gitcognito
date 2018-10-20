@@ -1,6 +1,6 @@
 
 
-var key = 'reejfiunfowifnwopnjihbvhnjkjhghjkjhghjuygbnjuygbnjuygtvbnjuytgfvbnjuytgvbnjuygmopmp';
+// var key = 'reejfiunfowifnwopnjihbvhnjkjhghjkjhghjuygbnjuygbnjuygtvbnjuytgfvbnjuytgvbnjuygmopmp';
 
 const fs = require('fs');
 const readline = require('readline');
@@ -9,24 +9,26 @@ var mkdirp = require('mkdirp');
 const dirTree = require('directory-tree');
 
 
-function encryptFile(fileToEncrypt) {
+function encryptFile(fileToEncrypt,key) {
+  // console.log("encrypting",fileToEncrypt);
     let encryptedFile = encryptPath(fileToEncrypt, key);
-    createDirs(encryptedFile);
+    createDirs("./.git_repo/"+encryptedFile);
     const readFile = readline.createInterface({
         input: fs.createReadStream(fileToEncrypt),
-        output: fs.createWriteStream(encryptedFile),
+        output: fs.createWriteStream("./.git_repo/"+encryptedFile),
         terminal: false
       });
     readFile
       .on('line', function(line) {
           this.output.write(`${encrypt(line, key)}\n`);
+          // console.log("written");
     })
       .on('close', function() {
-        console.log(`Created "${this.output.path}"`);
+        // console.log(`Created "${this.output.path}"`);
     });
 }
 
-function decryptFile(encryptedFile) {
+function decryptFile(encryptedFile,key) {
     let fileToEncrypt = decryptPath(encryptedFile, key);
     createDirs(fileToEncrypt);
     const readFile = readline.createInterface({
@@ -39,7 +41,7 @@ function decryptFile(encryptedFile) {
           this.output.write(`${decrypt(line, key)}\n`);
     })
       .on('close', function() {
-        console.log(`Created "${this.output.path}"`);
+        // console.log(`Created "${this.output.path}"`);
     });
 }
 
@@ -59,7 +61,7 @@ function getFiles(path) {
 }
 
 
-const ignore = ["node_modules", ".git"]
+const ignore = ["node_modules", ".git",".gcn",".git_repo",".DS_Store"];
 
 function getFilesHelper(tree, array) {
     if(tree.children == undefined || tree.children.length == 0 ) {

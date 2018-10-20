@@ -1,4 +1,5 @@
-const {encrypt, decrypt, encryptFile, decryptFile} = require('../fileEncryption/encrypt');
+const {encrypt, decrypt} = require('../fileEncryption/encrypt');
+const {getFiles, encryptFile} = require('../fileEncryption/fileController');
 
 module.exports = {
   init: function (args) {
@@ -9,7 +10,7 @@ module.exports = {
         return;
     }
 
-    console.log('Do the init');
+    // console.log('Do the init');
 
     var password;
     if(args.p) {
@@ -44,47 +45,75 @@ module.exports = {
     console.log("git clone "+"https://github.com/andreylukin/gitcognitoTemp"+" "+process.cwd());
      // git clone https://github.com/andreylukin/gitcognitoTemp .git_repo
   },
-  other: function (args,password,shell) {
+  other: function (args,password,shell,count) {
 
-    // TODO : copy files from editing directory to encrypted repo
-    //
-    // console.log(args);
+    // console.log(shell.exec('pwd').stdout);
+    // var path = shell.exec('pwd').stdout.replace(/^\s+|\s+$/g, '');
+    // console.log(count);
+    var path = "."+"/..".repeat(count);
+    // console.log("{"+path+"}");
+    var files = getFiles(path);
+    // console.log(files);
 
-    line = "git "+args._[0] + " " + args._.splice(1).map(function(str){
-        if(!(str === '.')) {
-          return "\""+encrypt(str,password)+"\"";
-        } else {
-          return str;
-        }
-      }).join(" ");
+    files.forEach(function(file){
+      // console.log("At: ",file);
+      encryptFile(file,password);
+    });
 
-     // + " "+args._.splice(1,0).forEach(function(element){
-    //   return encrypt(element);
-    // })
-    // .join(" ");
-    for(var p in args) {
-      if(!(p==="_")) {
-        if(args.hasOwnProperty(p)) {
-          if(p.length > 1) {
-            line += " --";
-          } else {
-            line += " -";
+    setTimeout(function(){
+
+
+
+
+
+
+          // TODO : copy files from editing directory to encrypted repo
+          //
+          // console.log(args);
+
+          line = "git "+args._[0] + " " + args._.splice(1).map(function(str){
+              if(!(str === '.')) {
+                return "\""+encrypt(str,password)+"\"";
+              } else {
+                return str;
+              }
+            }).join(" ");
+
+           // + " "+args._.splice(1,0).forEach(function(element){
+          //   return encrypt(element);
+          // })
+          // .join(" ");
+          for(var p in args) {
+            if(!(p==="_")) {
+              if(args.hasOwnProperty(p)) {
+                if(p.length > 1) {
+                  line += " --";
+                } else {
+                  line += " -";
+                }
+                  line += p + ' "' + encrypt(args[p],password)+'" ';
+              }
+            }
           }
-            line += p + ' "' + encrypt(args[p],password)+'" ';
-        }
-      }
-    }
 
-    // console.log("Running command: <"+line+">");
-    shell.cd("./.git_repo");
+          // console.log("Running command: <"+line+">");
+          shell.cd("./.git_repo");
 
-    var run_command = shell.exec(line,{stdio: "inherit"});
+          var run_command = shell.exec(line,{stdio: "inherit"});
 
-    if(run_command.stdout.length > 0) {
-      decrypt_tokens(run_command.stdout,password);
-    } else if(run_command.stderr.length > 0) {
-      decrypt_tokens(run_command.stderr,password);
-    }
+          if(run_command.stdout.length > 0) {
+            decrypt_tokens(run_command.stdout,password);
+          } else if(run_command.stderr.length > 0) {
+            decrypt_tokens(run_command.stderr,password);
+          }
+
+
+
+
+
+
+
+    },1000)
 
 
   }
