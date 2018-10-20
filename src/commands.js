@@ -1,5 +1,5 @@
 const {encrypt, decrypt} = require('../fileEncryption/encrypt');
-const {getFiles, encryptFile, syncEncryptDirs} = require('../fileEncryption/fileController');
+const {getFiles, encryptFile, syncEncryptDirs,syncDecryptDirs} = require('../fileEncryption/fileController');
 const {mkdirp} = require('mkdirp');
 const fs = require('fs');
 const uuidv1 = require('uuid/v1');
@@ -129,38 +129,19 @@ function other(args,password,shell) {
 
   syncEncryptDirs('./', './.git_repo/', password);
 
-
   line = assembleEncyptedCommand(args,password,0);
-  // console.log("{"+line+"}")
 
   shell.cd("./.git_repo");
 
-  // console.log(line);
   var run_command = shell.exec(line);
-
-
-
-  // var term = pty.spawn('ls', [shell.pwd().stdout]);
-
-  // term.on('data', function(data) {
-  //   console.log(data);
-  // });
-  //
-  // term.write('ls\r');
-  // term.resize(100, 40);
-  // term.write('ls /\r');
-
-  // console.log(term.process);
-
-
-
-
 
   if(run_command.stdout.length > 0) {
     decrypt_tokens(run_command.stdout,password);
   } else if(run_command.stderr.length > 0) {
     decrypt_tokens(run_command.stderr,password);
   }
+
+  syncDecryptDirs(".git_repo/", password);
 
 }
 

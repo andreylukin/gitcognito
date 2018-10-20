@@ -109,6 +109,7 @@ function syncDecryptDirs(target, password) {
         decryptFile(targetArray[i], password);
     }
 }
+// syncDecryptDirs(".git_repo/", "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
 
 
 module.exports.getFiles = getFiles;
