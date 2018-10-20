@@ -8,6 +8,7 @@ const { encrypt, decrypt, encryptPath, decryptPath } = require('./encrypt');
 var mkdirp = require('mkdirp');
 const dirTree = require('directory-tree');
 var util = require('util');
+var path = require('path')
 
 
 function encryptFile(fileToEncrypt,key) {
@@ -31,9 +32,12 @@ function encryptFile(fileToEncrypt,key) {
 function decryptFile(encryptedFile,key) {
     let fileToEncrypt = decryptPath(encryptedFile, key);
     createDirs(fileToEncrypt);
+    var parentDir = path.resolve(process.cwd(), '..');
+    // console.log("running in ",parentDir);
+    // console.log("Decrypting from ",encryptedFile," to ",fileToEncrypt);
     const readFile = readline.createInterface({
-        input: fs.createReadStream("./.git_repo/" + encryptedFile),
-        output: fs.createWriteStream(fileToEncrypt),
+        input: fs.createReadStream("./" + encryptedFile),
+        output: fs.createWriteStream("../"+fileToEncrypt),
         terminal: false
       });
     readFile
@@ -49,9 +53,17 @@ function decryptFile(encryptedFile,key) {
 function createDirs(path) {
     let dirs = path.split("/");
     if(!(dirs.length == 1 && dirs[0] == "") && path.charAt(path.length - 1) == '/') {
-        mkdirp.sync(dirs.splice(0, dirs.length - 2).join("/"));
+      var tar = dirs.splice(0, dirs.length - 2).join("/");
+        if(tar === undefined) {
+          // console.log("{"+tar+"}");
+          mkdirp.sync(tar);
+        }
     } else {
-        mkdirp.sync(path.split("/").splice(0, dirs.length - 1).join("/"));
+      var tar = path.split("/").splice(0, dirs.length - 1).join("/");
+      if(tar === undefined) {
+        // console.log("{"+tar+"}");
+        mkdirp.sync(tar);
+      }
     }
 }
 
@@ -106,7 +118,6 @@ function syncDecryptDirs(target, password) {
     // const srcSet = new Set(getFiles(src));
     // console.log(getFiles(target));
     const targetArray = getFiles(target);
-    // console.log(targetArray);
     for(let i = 0; i < targetArray.length; i +=1) {
         decryptFile(targetArray[i], password);
     }

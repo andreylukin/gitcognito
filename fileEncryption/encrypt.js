@@ -3,7 +3,7 @@ const crypto = require('crypto'),
 
 
 function encrypt(text, password){
-  console.log("{"+text+"}");
+  // console.log("{"+text+"}");
   var cipher = crypto.createCipher(algorithm,password)
   var crypted = cipher.update(text,'utf8','hex')
   crypted += cipher.final('hex');
@@ -13,7 +13,7 @@ function encrypt(text, password){
 }
 
 function decrypt(text, password){
-  console.log("De:{"+text+"}");
+  // console.log("De:{"+text+"}");
   var decipher = crypto.createDecipher(algorithm,password)
   var dec = decipher.update(text.replace("[[[[", "").replace("]]]]", "") ,'hex','utf8')
   dec += decipher.final('utf8');
