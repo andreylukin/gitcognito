@@ -20,9 +20,10 @@
   },
   "homepage": "https://github.com/andreylukin/gitcognito#readme",
   "dependencies": {
+    "directory-tree": "^2.1.0",
+    "generate-password": "^1.4.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "generate-password": "^1.4.0",
     "shelljs": "^0.8.2"
   }
 }

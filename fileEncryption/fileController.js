@@ -6,6 +6,7 @@ const fs = require('fs');
 const readline = require('readline');
 const { encrypt, decrypt, encryptPath, decryptPath } = require('./encrypt');
 var mkdirp = require('mkdirp');
+const dirTree = require('directory-tree');
 
 
 function encryptFile(fileToEncrypt) {
@@ -52,6 +53,23 @@ function createDirs(path) {
     }
 }
 
+
+const tree = dirTree('./');
+
+const ignore = ["node_modules", ".git"]
+
+function getFiles(tree, array) {
+    if(tree.children == undefined || tree.children.length == 0 ) {
+        array.push(tree.path)
+        return array;
+    };
+    for(let i = 0; i< tree.children.length; i+=1) {
+        if(!ignore.includes(tree.children[i].name)) {
+            getFiles(tree.children[i], array);
+        }
+    }
+    return array;
+}
 
 
 
