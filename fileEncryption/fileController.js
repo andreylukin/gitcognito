@@ -7,6 +7,7 @@ const readline = require('readline');
 const { encrypt, decrypt, encryptPath, decryptPath } = require('./encrypt');
 var mkdirp = require('mkdirp');
 const dirTree = require('directory-tree');
+var util = require('util');
 
 
 function encryptFile(fileToEncrypt,key) {
@@ -75,7 +76,28 @@ function getFilesHelper(tree, array) {
     return array;
 }
 
+function syncDirs(src, target, translation, password) {
+    const srcSet = new Set(getFiles(src));
+    const targetMap = getFiles(target).reduce(function(a, b){
+        let stats = fs.statSync(b);
+        a.set(b.split("/").slice(1).join(""), new Date(util.inspect(stats.mtime)));
+        return a;
+    }, new Map());
+
+    console.log(targetMap);
+    for(let file of srcSet) {
+        let stats = fs.statSync(file);
+        let time = new Date(util.inspect(stats.mtime));
+        if(!targetMap.has(translation(file, password)) || targetMap.get(translation(file, password)) < time)  {
+            encryptFile(file, password);
+        }
+    }
+}
+
+// syncDirs(".", "./.git_repo", encrypt, "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
+
 
 module.exports.getFiles = getFiles;
 module.exports.encryptFile = encryptFile;
 module.exports.decryptFile = decryptFile;
+module.exports.syncDirs = syncDirs;

@@ -115,19 +115,12 @@ module.exports = {
 };
 
 function decrypt_tokens(string,password) {
-  // console.log("return info: ");
-  // console.log(string);
-  // console.log("done")
+
   let begin = ";};";
   let end = "{;}";
   var array = string.split(begin);
-  // console.log(array);
   process.stdout.write(array.map(function(item){
-    var again = item.split(end);
-    if(again.length > 1) {
-      again[0] = decrypt(again[0],password);
-    }
-    return again.join("");
+    return decrypt_token(item, begin, end, password);
   }).join(""));
   // string = array.map(function(elem) {
   //   parts = elem.split(end);
@@ -137,3 +130,10 @@ function decrypt_tokens(string,password) {
   // console.log(string);
   // process.stdout.write(string);
 }
+
+function decrypt_token(string, beingToken, endToken, password) {
+  let encodedString = string.split(beingToken)[1].split(endToken)[0]
+  return decrypt(encodedString, password);
+}
+
+
