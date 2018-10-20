@@ -68,7 +68,7 @@ function getFilesHelper(tree, array) {
     };
     for(let i = 0; i< tree.children.length; i+=1) {
         if(!ignore.includes(tree.children[i].name)) {
-            getFiles(tree.children[i], array);
+            getFilesHelper(tree.children[i], array);
         }
     }
     return array;
