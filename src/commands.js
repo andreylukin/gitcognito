@@ -141,7 +141,7 @@ function other(args,password,shell) {
     decrypt_tokens(run_command.stderr,password);
   }
 
-  syncDecryptDirs(".git_repo/", password);
+  syncDecryptDirs("./", password);
 
 }
 

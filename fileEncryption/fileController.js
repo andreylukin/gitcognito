@@ -95,6 +95,7 @@ function syncEncryptDirs(src, target, password) {
 
     if(targetMap.size != 0) {
         for(let [key, value] of targetMap ) {
+            // console.log(target+key);
             fs.unlinkSync(target + key);
         }
     }
@@ -103,8 +104,9 @@ function syncEncryptDirs(src, target, password) {
 
 function syncDecryptDirs(target, password) {
     // const srcSet = new Set(getFiles(src));
-    const targetArray = getFiles(target).map((a) => a.slice(10) );
-    console.log(targetArray);
+    // console.log(getFiles(target));
+    const targetArray = getFiles(target);
+    // console.log(targetArray);
     for(let i = 0; i < targetArray.length; i +=1) {
         decryptFile(targetArray[i], password);
     }
