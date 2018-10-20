@@ -1,5 +1,4 @@
-var shell = require('shelljs');
-shell.config.silent = true;
+const {encrypt, decrypt, encryptFile, decryptFile} = require('../fileEncryption/encrypt');
 
 module.exports = {
   init: function (args) {
@@ -45,30 +44,48 @@ module.exports = {
     console.log("git clone "+"https://github.com/andreylukin/gitcognitoTemp"+" "+process.cwd());
      // git clone https://github.com/andreylukin/gitcognitoTemp .git_repo
   },
-  other: function (args,password) {
+  other: function (args,password,shell) {
 
+    // TODO : copy files from editing directory to encrypted repo
+    //
     // console.log(args);
-
-    free_params = args._;
-
-    line = "git "+args._.join(" ");
+    // args._.splice(1,0).forEach(function(element){
+    //   return (element+"*");
+    // })
+    // console.log(args._);
+    line = "git "+args._.splice(0).join(" ");
+     // + " "+args._.splice(1,0).forEach(function(element){
+    //   return encrypt(element);
+    // })
+    // .join(" ");
     for(var p in args) {
       if(!(p==="_")) {
         if(args.hasOwnProperty(p)) {
-            line = line + " -" + p + ' "' + args[p]+'" ';
+          if(p.length > 1) {
+            line += " --";
+          } else {
+            line += " -";
+          }
+            line += p + ' "' + encrypt(args[p],password)+'" ';
         }
       }
     }
-    // console.log("Running command: <"+line+">");
 
+    console.log("Running command: <"+line+">");
     shell.cd("./.git_repo");
-    var run_command = shell.exec(line);
+    // console.log(shell.exec("pwd"));
+    var run_command = shell.exec(line,{stdio: "inherit"});
     // console.log(run_command);
     if(run_command.stdout.length > 0) {
-      process.stdout.write(run_command.stdout);
+      decrypt_tokens(run_command.stdout);
     } else if(run_command.stderr.length > 0) {
-      process.stdout.write(run_command.stderr);
+      decrypt_tokens(run_command.stderr);
     }
+
 
   }
 };
+
+function decrypt_tokens(string) {
+  process.stdout.write(string);
+}

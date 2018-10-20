@@ -1,3 +1,6 @@
+var shell = require('shelljs');
+shell.config.silent = true;
+
 var parse = require('./src/commands.js');
 
 module.exports = () => {
@@ -15,10 +18,21 @@ module.exports = () => {
 
   } else{
 
-    if (!fs.existsSync(".gcn")) {
-      console.log("Error: not a gcn repo");
-      return;
+
+    // console.log(shell.exec("pwd").stdout);
+    while(shell.test('-f', '.gcn') == false) {
+      shell.cd("../");
+      // console.log(shell.exec("pwd").stdout);
+      if(shell.exec("pwd").stdout === "/\n") {
+        console.log("Error: not a gcn repo");
+        return;
+      }
     }
+
+    // if (!fs.existsSync(".gcn")) {
+    //   console.log("Error: not a gcn repo");
+    //   return;
+    // }
 
     var contents = fs.readFileSync(".gcn");
     try {
@@ -34,7 +48,7 @@ module.exports = () => {
     if(command === 'clone') {
       parse.clone(args,password);
     } else {
-      parse.other(args,password)
+      parse.other(args,password,shell)
     }
 
   }

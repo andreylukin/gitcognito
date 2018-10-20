@@ -1,7 +1,7 @@
 
 
 var key = 'reejfiunfowifnwopnjihbvhnjkjhghjkjhghjuygbnjuygbnjuygtvbnjuytgfvbnjuytgvbnjuygmopmp';
- 
+
 const fs = require('fs');
 const readline = require('readline');
 const { encrypt, decrypt, encryptPath, decryptPath } = require('./encrypt');
@@ -57,8 +57,3 @@ function createDirs(path) {
 
 module.exports.encryptFile = encryptFile;
 module.exports.decryptFile = decryptFile;
-
-
-
-
-
