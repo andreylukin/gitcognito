@@ -17,6 +17,10 @@
   },
   "homepage": "https://github.com/andreylukin/gitcognito#readme",
   "dependencies": {
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "simple-encryptor": "^2.0.0",
+    "sodium-encryption": "^1.2.3",
+    "zany": "^1.0.6"
   }
 }
