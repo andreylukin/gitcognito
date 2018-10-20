@@ -54,11 +54,14 @@ function createDirs(path) {
 }
 
 
-const tree = dirTree('./');
+function getFiles(path) {
+    return getFilesHelper(dirTree(path), []);
+}
+
 
 const ignore = ["node_modules", ".git"]
 
-function getFiles(tree, array) {
+function getFilesHelper(tree, array) {
     if(tree.children == undefined || tree.children.length == 0 ) {
         array.push(tree.path)
         return array;
@@ -72,6 +75,6 @@ function getFiles(tree, array) {
 }
 
 
-
+module.exports.getFiles = getFiles;
 module.exports.encryptFile = encryptFile;
 module.exports.decryptFile = decryptFile;
