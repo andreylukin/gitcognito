@@ -49,11 +49,15 @@ module.exports = {
     // TODO : copy files from editing directory to encrypted repo
     //
     // console.log(args);
-    // args._.splice(1,0).forEach(function(element){
-    //   return (element+"*");
-    // })
-    // console.log(args._);
-    line = "git "+args._.splice(0).join(" ");
+
+    line = "git "+args._[0] + " " + args._.splice(1).map(function(str){
+        if(!(str === '.')) {
+          return "\""+encrypt(str,password)+"\"";
+        } else {
+          return str;
+        }
+      }).join(" ");
+
      // + " "+args._.splice(1,0).forEach(function(element){
     //   return encrypt(element);
     // })
@@ -71,21 +75,41 @@ module.exports = {
       }
     }
 
-    console.log("Running command: <"+line+">");
+    // console.log("Running command: <"+line+">");
     shell.cd("./.git_repo");
-    // console.log(shell.exec("pwd"));
+
     var run_command = shell.exec(line,{stdio: "inherit"});
-    // console.log(run_command);
+
     if(run_command.stdout.length > 0) {
-      decrypt_tokens(run_command.stdout);
+      decrypt_tokens(run_command.stdout,password);
     } else if(run_command.stderr.length > 0) {
-      decrypt_tokens(run_command.stderr);
+      decrypt_tokens(run_command.stderr,password);
     }
 
 
   }
 };
 
-function decrypt_tokens(string) {
-  process.stdout.write(string);
+function decrypt_tokens(string,password) {
+  // console.log("return info: ");
+  // console.log(string);
+  // console.log("done")
+  let begin = ";};";
+  let end = "{;}";
+  var array = string.split(begin);
+  // console.log(array);
+  process.stdout.write(array.map(function(item){
+    var again = item.split(end);
+    if(again.length > 1) {
+      again[0] = decrypt(again[0],password);
+    }
+    return again.join("");
+  }).join(""));
+  // string = array.map(function(elem) {
+  //   parts = elem.split(end);
+  //   console.log(parts);
+  //   parts[0] = decrypt(parts[0],password);
+  // }).join("");
+  // console.log(string);
+  // process.stdout.write(string);
 }

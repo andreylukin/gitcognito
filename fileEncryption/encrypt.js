@@ -5,9 +5,11 @@ function encrypt(text, password){
   var cipher = crypto.createCipher(algorithm,password)
   var crypted = cipher.update(text,'utf8','hex')
   crypted += cipher.final('hex');
-  return crypted;
+  let begin = ";};";
+  let end = "{;}";
+return begin+crypted+end;
 }
- 
+
 function decrypt(text, password){
   var decipher = crypto.createDecipher(algorithm,password)
   var dec = decipher.update(text,'hex','utf8')
