@@ -106,4 +106,8 @@ syncEncryptDirs(".", ".git_repo/", "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdH
 module.exports.getFiles = getFiles;
 module.exports.encryptFile = encryptFile;
 module.exports.decryptFile = decryptFile;
+<<<<<<< HEAD
 module.exports.syncEncryptDirs = syncEncryptDirs;
+=======
+module.exports.syncDirs = syncDirs;
+>>>>>>> 61aa95d44dc826322004cc63ea24ef91309d4119

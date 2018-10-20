@@ -16,38 +16,33 @@ module.exports = () => {
     parse.init(args);
     return;
 
-  } else{
+  } else if(command === 'clone') {
 
+    parse.clone(args,shell);
+    return;
 
-    // console.log(shell.exec("pwd").stdout);
-    var count = 0;
+  } else {
+
+    // Find root directory of gcn repo
     while(!shell.test('-f', '.gcn')) {
       shell.cd("../");
-      count++;
-      console.log("going up");
-      // console.log(shell.exec("pwd").stdout);
       if(shell.exec("pwd").stdout === "/\n") {
         console.log("Error: not a gcn repo");
         return;
       }
     }
 
+    // Load ecryption key / password
     var contents = fs.readFileSync(".gcn");
     try {
       var jsonContent = JSON.parse(contents);
     } catch(error) {
       console.log(error);
     }
-
     var password = jsonContent.password;
 
-    // this is a gcn repo and it is initialized. parse commands
-
-    if(command === 'clone') {
-      parse.clone(args,password);
-    } else {
-      parse.other(args,password,shell,count)
-    }
+    // This is a gcn repo and it is initialized. Parse commands
+    parse.other(args,password,shell)
 
   }
 
