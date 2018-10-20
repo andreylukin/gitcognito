@@ -16,7 +16,10 @@ module.exports = () => {
     parse.init(args);
     return;
 
-  } else{
+  } else if(command === 'clone') {
+    parse.clone(args,shell);
+    return;
+  } else {
 
 
     // console.log(shell.exec("pwd").stdout);

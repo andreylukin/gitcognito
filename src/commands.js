@@ -1,87 +1,108 @@
 const {encrypt, decrypt} = require('../fileEncryption/encrypt');
 const {getFiles, encryptFile} = require('../fileEncryption/fileController');
+const {mkdirp} = require('mkdirp');
+const fs = require('fs');
+const uuidv1 = require('uuid/v1');
+
+function assembleEncyptedCommand(args,password,offset) {
+  var unencrypted = args._.splice(0,offset+1).join(" ");
+  var encrypted = args._.map(function(str){
+    if(!(str === '.')) {
+      return "\""+encrypt(str,password)+"\"";
+    } else {
+      return str;
+    }
+  }).join(" ");
+  line = "git "+unencrypted+" "+encrypted;
+
+  for(var p in args) {
+    if(!(p==="_")) {
+      if(args.hasOwnProperty(p)) {
+        if(p.length > 1) {
+          line += " --";
+        } else {
+          line += " -";
+        }
+        line += p;
+        if(typeof(args[p]) === "string") {
+          line += ' "'+encrypt(args[p],password)+'" ';
+        } else if(typeof(args[p]) === "boolean") {
+          line += ' ';
+        } else {
+          line += ' '+args[p];
+        }
+      }
+    }
+  }
+  return line;
+}
+
+
+function makeDotFile(password) {
+  let data = JSON.stringify({
+    password : password
+  });
+
+  fs.writeFileSync('.gcn', data);
+
+}
 
 module.exports = {
   init: function (args) {
 
-    var fs = require('fs');
     if (fs.existsSync(".gcn")) {
         console.log("reinit");
+        // TODO
         return;
     }
-
-    // console.log('Do the init');
 
     var password;
     if(args.p) {
       password = args.p;
     } else {
       var generator = require('generate-password');
-      // password = generator.generate({
-      //     length: 64,
-      //     numbers: true
-      // });
+
       password = "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu";
     }
 
-    let data = JSON.stringify({
-      password : password
-    });
-
-    fs.writeFileSync('.gcn', data);
-
-    var mkdirp = require('mkdirp');
-
-    mkdirp('.git_repo', function(err) {
-      if (err) console.error(err); return;
-      console.log(password);
-
-    });
+    makeDotFile(password);
+    mkdirp.sync('.git_repo');
 
   },
-  clone: function (args,password) {
-    // TODO : clone functionality
-    console.log("clone " +password +"\n");
-    console.log(args);
-    console.log("git clone "+"https://github.com/andreylukin/gitcognitoTemp"+" "+process.cwd());
-     // git clone https://github.com/andreylukin/gitcognitoTemp .git_repo
+  clone: function (args,shell) {
+
+    if (typeof args.p === "undefined"){
+      console.log("You must supply the encryption key to clone a gcn repo.");
+      return;
+    }
+
+    let temp_name = '.gcn_clone_temporary_'+uuidv1();
+    mkdirp.sync(temp_name);
+    shell.cd(temp_name);
+    password = args.p;
+    delete(args.p);
+    var command = assembleEncyptedCommand(args,password,1);
+    shell.exec(command);
+    var dir_name = shell.exec("ls").stdout.replace(/(\r\n\t|\n|\r\t)/gm,"");
+    makeDotFile(password);
+    shell.exec("mv * .git_repo");
+    shell.cd("..");
+    shell.mv([temp_name],dir_name);
+
+    // TODO: update editing direcetory by decryption
+
   },
   other: function (args,password,shell,count) {
 
-    // console.log(shell.exec('pwd').stdout);
-    // var path = shell.exec('pwd').stdout.replace(/^\s+|\s+$/g, '');
-    // console.log(count);
-    // var path = "."+"/..".repeat(count);
-    // console.log("{"+path+"}");
     var files = getFiles();
-    // console.log(files);
 
     files.forEach(function(file){
       encryptFile(file,password);
     });
 
-    line = "git "+args._[0] + " " + args._.splice(1).map(function(str){
-        if(!(str === '.')) {
-          return "\""+encrypt(str,password)+"\"";
-        } else {
-          return str;
-        }
-      }).join(" ");
+    line = assembleEncyptedCommand(args,password,0);
+    // console.log("{"+line+"}")
 
-    for(var p in args) {
-      if(!(p==="_")) {
-        if(args.hasOwnProperty(p)) {
-          if(p.length > 1) {
-            line += " --";
-          } else {
-            line += " -";
-          }
-            line += p + ' "' + encrypt(args[p],password)+'" ';
-        }
-      }
-    }
-
-    // console.log("Running command: <"+line+">");
     shell.cd("./.git_repo");
 
     var run_command = shell.exec(line,{stdio: "inherit"});
@@ -92,17 +113,10 @@ module.exports = {
       decrypt_tokens(run_command.stderr,password);
     }
 
-
-
-
-
   }
 };
 
 function decrypt_tokens(string,password) {
-  // console.log("return info: ");
-  // console.log(string);
-  // console.log("done")
   let begin = "[[[[";
   let end = "]]]]";
   var array = string.split(begin);
@@ -114,11 +128,4 @@ function decrypt_tokens(string,password) {
     }
     return again.join("");
   }).join(""));
-  // string = array.map(function(elem) {
-  //   parts = elem.split(end);
-  //   console.log(parts);
-  //   parts[0] = decrypt(parts[0],password);
-  // }).join("");
-  // console.log(string);
-  // process.stdout.write(string);
 }
