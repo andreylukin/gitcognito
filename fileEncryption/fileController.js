@@ -56,8 +56,8 @@ function createDirs(path) {
 }
 
 
-function getFiles() {
-  return getFilesHelper(dirTree("."), []);
+function getFiles(path) {
+  return getFilesHelper(dirTree(path), []);
 }
 
 
@@ -84,7 +84,6 @@ function syncDirs(src, target, translation, password) {
         return a;
     }, new Map());
 
-    console.log(targetMap);
     for(let file of srcSet) {
         let stats = fs.statSync(file);
         let time = new Date(util.inspect(stats.mtime));
@@ -94,7 +93,7 @@ function syncDirs(src, target, translation, password) {
     }
 }
 
-// syncDirs(".", "./.git_repo", encrypt, "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
+// syncDirs(".", ".git_repo/", encrypt, "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
 
 
 module.exports.getFiles = getFiles;
