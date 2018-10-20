@@ -5,8 +5,8 @@ function encrypt(text, password){
   var cipher = crypto.createCipher(algorithm,password)
   var crypted = cipher.update(text,'utf8','hex')
   crypted += cipher.final('hex');
-  let begin = ";};";
-  let end = "{;}";
+  let begin = "[[[[";
+  let end = "]]]]";
   return begin+crypted+end;
 }
 

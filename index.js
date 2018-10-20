@@ -21,7 +21,6 @@ module.exports = () => {
 
     // console.log(shell.exec("pwd").stdout);
     var count = 0;
-    console.log(shell.test('-f', '.gcn'));
     while(!shell.test('-f', '.gcn')) {
       shell.cd("../");
       count++;

@@ -54,22 +54,11 @@ module.exports = {
     // var path = "."+"/..".repeat(count);
     // console.log("{"+path+"}");
     var files = getFiles();
-    console.log(files);
-    
+    // console.log(files);
+
     files.forEach(function(file){
       encryptFile(file,password);
     });
-
-    
-    
-    
-    
-    
-    
-    
-    // TODO : copy files from editing directory to encrypted repo
-    //
-    // console.log(args);
 
     line = "git "+args._[0] + " " + args._.splice(1).map(function(str){
         if(!(str === '.')) {
@@ -79,10 +68,6 @@ module.exports = {
         }
       }).join(" ");
 
-      // + " "+args._.splice(1,0).forEach(function(element){
-    //   return encrypt(element);
-    // })
-    // .join(" ");
     for(var p in args) {
       if(!(p==="_")) {
         if(args.hasOwnProperty(p)) {
@@ -118,8 +103,8 @@ function decrypt_tokens(string,password) {
   // console.log("return info: ");
   // console.log(string);
   // console.log("done")
-  let begin = ";};";
-  let end = "{;}";
+  let begin = "[[[[";
+  let end = "]]]]";
   var array = string.split(begin);
   // console.log(array);
   process.stdout.write(array.map(function(item){
