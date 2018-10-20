@@ -80,7 +80,7 @@ function syncEncryptDirs(src, target, password) {
     const srcSet = new Set(getFiles(src));
     const targetMap = getFiles(target).reduce(function(a, b){
         let stats = fs.statSync(b);
-        a.set(b.split("/").slice(1).join(""), new Date(util.inspect(stats.mtime)));
+        a.set(b.split("/").slice(1).join("/"), new Date(util.inspect(stats.mtime)));
         return a;
     }, new Map());
 
@@ -90,7 +90,7 @@ function syncEncryptDirs(src, target, password) {
         if(!targetMap.has(encrypt(file, password)) || targetMap.get(encrypt(file, password)) < time)  {
             encryptFile(file, password);
         }
-        targetMap.delete(encrypt(file, password))
+        targetMap.delete(encryptPath(file, password))
     }
 
     if(targetMap.size != 0) {
@@ -100,14 +100,10 @@ function syncEncryptDirs(src, target, password) {
     }
 }
 
-syncEncryptDirs(".", ".git_repo/", "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
+// syncEncryptDirs(".", ".git_repo/", "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
 
 
 module.exports.getFiles = getFiles;
 module.exports.encryptFile = encryptFile;
 module.exports.decryptFile = decryptFile;
-<<<<<<< HEAD
 module.exports.syncEncryptDirs = syncEncryptDirs;
-=======
-module.exports.syncDirs = syncDirs;
->>>>>>> 61aa95d44dc826322004cc63ea24ef91309d4119

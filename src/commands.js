@@ -1,5 +1,5 @@
 const {encrypt, decrypt} = require('../fileEncryption/encrypt');
-const {getFiles, encryptFile, syncDirs} = require('../fileEncryption/fileController');
+const {getFiles, encryptFile, syncEncryptDirs} = require('../fileEncryption/fileController');
 const {mkdirp} = require('mkdirp');
 const fs = require('fs');
 const uuidv1 = require('uuid/v1');
@@ -7,13 +7,17 @@ const uuidv1 = require('uuid/v1');
 function assembleEncyptedCommand(args,password,offset) {
   var unencrypted = args._.splice(0,offset+1).join(" ");
   var encrypted = args._.map(function(str){
-    if(!(str === '.')) {
+    keywords = ['.', 'HEAD', 'origin','-','--','clear','set-url', 'remote','add'];
+    url_match = /^((http[s]?|ssh|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/g;
+    if(!(keywords.indexOf(str) >= 0) && !url_match.test(str)) {
       return "\""+encrypt(str,password)+"\"";
     } else {
       return str;
     }
   }).join(" ");
-  line = "git "+unencrypted+" "+encrypted;
+  const scenes = ['diff','status', 'branch', 'interactive', 'ui'];
+  color_opts= '-c color.'+scenes.join('=always -c color.')+'=always ';
+  line = 'git '+color_opts+unencrypted+" "+encrypted;
 
   for(var p in args) {
     if(!(p==="_")) {
@@ -34,6 +38,7 @@ function assembleEncyptedCommand(args,password,offset) {
       }
     }
   }
+  // console.log("{"+line+"}");
   return line;
 }
 
@@ -62,7 +67,7 @@ function decrypt_tokens(string,password) {
     }
     return again.join("");
   }).join(""));
-  
+
 }
 
 function decrypt_token(string, beginToken, endToken, password) {
@@ -122,7 +127,7 @@ function clone(args,shell) {
 
 function other(args,password,shell) {
 
-  syncDirs('.', './.git_repo', encrypt, password);
+  syncEncryptDirs('./', './.git_repo/', password);
 
 
   line = assembleEncyptedCommand(args,password,0);
@@ -130,7 +135,26 @@ function other(args,password,shell) {
 
   shell.cd("./.git_repo");
 
-  var run_command = shell.exec(line,{stdio: "inherit"});
+  // console.log(line);
+  var run_command = shell.exec(line);
+
+
+
+  // var term = pty.spawn('ls', [shell.pwd().stdout]);
+
+  // term.on('data', function(data) {
+  //   console.log(data);
+  // });
+  //
+  // term.write('ls\r');
+  // term.resize(100, 40);
+  // term.write('ls /\r');
+
+  // console.log(term.process);
+
+
+
+
 
   if(run_command.stdout.length > 0) {
     decrypt_tokens(run_command.stdout,password);
