@@ -1,5 +1,5 @@
 const {encrypt, decrypt} = require('../fileEncryption/encrypt');
-const {getFiles, encryptFile} = require('../fileEncryption/fileController');
+const {getFiles, encryptFile, syncDirs} = require('../fileEncryption/fileController');
 const {mkdirp} = require('mkdirp');
 const fs = require('fs');
 const uuidv1 = require('uuid/v1');
@@ -92,13 +92,16 @@ module.exports = {
     // TODO: update editing direcetory by decryption
 
   },
-  other: function (args,password,shell,count) {
+  other: function (args,password,shell) {
 
     var files = getFiles();
 
-    files.forEach(function(file){
-      encryptFile(file,password);
-    });
+    // files.forEach(function(file){
+    //   encryptFile(file,password);
+    // });
+
+    syncDirs('.', './.git_repo', encrypt, password);
+
 
     line = assembleEncyptedCommand(args,password,0);
     // console.log("{"+line+"}")
@@ -117,17 +120,27 @@ module.exports = {
 };
 
 function decrypt_tokens(string,password) {
+
+  var regex = /\b[Gg]it\b/g;
+  string = string.replace(regex, "gcn");
+
   let begin = "[[[[";
   let end = "]]]]";
   var array = string.split(begin);
   process.stdout.write(array.map(function(item){
-    return decrypt_token(item, begin, end, password);
+    var again = item.split(end);
+    if(again.length > 1) {
+      again[0] = decrypt(again[0],password);
+    }
+    return again.join("");
   }).join(""));
 }
 
-function decrypt_token(string, beingToken, endToken, password) {
-  let encodedString = string.split(beingToken)[1].split(endToken)[0]
-  return decrypt(encodedString, password);
+function decrypt_token(string, beginToken, endToken, password) {
+  if(string.split(beginToken).length > 1) {
+    let encodedString = string.split(beginToken)[1].split(endToken)[0]
+    return decrypt(encodedString, password);
+  } else {
+    return string;
+  }
 }
-
-
