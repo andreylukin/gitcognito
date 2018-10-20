@@ -21,20 +21,17 @@ module.exports = () => {
 
     // console.log(shell.exec("pwd").stdout);
     var count = 0;
-    while(shell.test('-f', '.gcn') == false) {
+    console.log(shell.test('-f', '.gcn'));
+    while(!shell.test('-f', '.gcn')) {
       shell.cd("../");
       count++;
+      console.log("going up");
       // console.log(shell.exec("pwd").stdout);
       if(shell.exec("pwd").stdout === "/\n") {
         console.log("Error: not a gcn repo");
         return;
       }
     }
-
-    // if (!fs.existsSync(".gcn")) {
-    //   console.log("Error: not a gcn repo");
-    //   return;
-    // }
 
     var contents = fs.readFileSync(".gcn");
     try {
