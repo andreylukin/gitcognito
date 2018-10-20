@@ -56,8 +56,8 @@ function createDirs(path) {
 }
 
 
-function getFiles(path) {
-    return getFilesHelper(dirTree(path), []);
+function getFiles() {
+  return getFilesHelper(dirTree("."), []);
 }
 
 

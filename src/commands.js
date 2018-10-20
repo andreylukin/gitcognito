@@ -48,12 +48,12 @@ module.exports = {
   },
   other: function (args,password,shell,count) {
 
-    console.log(shell.exec('pwd').stdout);
-    var path = shell.exec('pwd').stdout.replace(/^\s+|\s+$/g, '');
-    console.log(count);
-    var path = "."+"/..".repeat(count);
-    console.log("{"+path+"}");
-    var files = getFiles(path);
+    // console.log(shell.exec('pwd').stdout);
+    // var path = shell.exec('pwd').stdout.replace(/^\s+|\s+$/g, '');
+    // console.log(count);
+    // var path = "."+"/..".repeat(count);
+    // console.log("{"+path+"}");
+    var files = getFiles();
     console.log(files);
     //
     // files.forEach(function(file){
