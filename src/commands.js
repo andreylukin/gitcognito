@@ -1,10 +1,11 @@
-const {encrypt, decrypt, delims} = require('../fileEncryption/encrypt');
+const {encrypt, decrypt, constructDelims} = require('../fileEncryption/encrypt');
 const {getFiles, encryptFile, syncEncryptDirs,syncDecryptDirs} = require('../fileEncryption/fileController');
 const {mkdirp} = require('mkdirp');
 const fs = require('fs');
 const uuidv1 = require('uuid/v1');
 
-
+var delims = constructDelims();
+console.log(delims);
 var front = delims.map(pair => pair.begin);
 var back = delims.map(pair => pair.end);
 var regex = new RegExp('('+front.join("|")+')(.*?)('+back.join("|")+')', 'g')

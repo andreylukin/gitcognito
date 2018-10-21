@@ -8,7 +8,8 @@ var sc = require('simple-crypto-js');
 // Must be deterministic with respect to password
 
 
-let corpus = "These excellant intentions were strengthed when he enterd the Father Superior's diniing-room, though, stricttly speakin, it was not a dining-room, for the Father Superior had only two rooms alltogether; they were, however, much larger and more comfortable than Father Zossima's. But tehre was was no great luxury about the furnishng of these rooms eithar. The furniture was of mohogany, covered with leather, in the old-fashionned style of 1820 the floor was not even stained, but evreything was shining with cleanlyness,";
+let corpus = "These excellant intentions were strengthed when he enterd the Father";
+// Superior's diniing-room, though, stricttly speakin, it was not a dining-room, for the Father Superior had only two rooms alltogether; they were, however, much larger and more comfortable than Father Zossima's. But tehre was was no great luxury about the furnishng of these rooms eithar. The furniture was of mohogany, covered with leather, in the old-fashionned style of 1820 the floor was not even stained, but evreything was shining with cleanlyness,";
 
 // and there were many chioce flowers in the windows; the most sumptuous thing in the room at the moment was, of course, the beatifuly decorated table. The cloth was clean, the service shone; there were three kinds of well-baked bread, two bottles of wine, two of excellent mead, and a large glass jug of kvas -- both the latter made in the monastery, and famous in the neigborhood. There was no vodka. Rakitin related afterwards that there were five dishes f soup"+"made of sterlets, served with little fish paties; then boiled fish served in a spesial way; then salmon cutlets, ice pudding and compote, and finally, blanc-mange. Rakitin found out about all these good things, for he could not resist peeping into the kitchen, where he already had a footing. He had a footting everywhere, and got informaiton about everything. He was of an uneasy and envious temper. He was well aware of his own considerable abilities, and nervously exaggerated them in his self-conceit. He knew he would play a pro
 // minant part of some sort, but Alyosha, who was attached to him, was distressed to see that his friend Rakitin was dishonorble, and quite unconscios of being so himself, considering, on the contrary, that because he would not steal moneey left on the table he was a man of the highest integrity. Neither Alyosha nor anyone else could have infleunced him in that."
@@ -19,8 +20,8 @@ String.prototype.hexEncode = function(){
 
     var result = "";
     for (i=0; i<this.length; i++) {
-        hex = this.charCodeAt(i).toString(8);
-        result += ("0"+hex).slice(-2);
+        hex = this.charCodeAt(i).toString(16);
+        result += ("000"+hex).slice(-2);
     }
 
     return result
@@ -32,7 +33,7 @@ String.prototype.hexDecode = function(){
     var hexes = this.match(/.{1,2}/g) || [];
     var back = "";
     for(j = 0; j<hexes.length; j++) {
-        back += String.fromCharCode(parseInt(hexes[j], 8));
+        back += String.fromCharCode(parseInt(hexes[j], 16));
     }
 
     return back;
@@ -40,7 +41,18 @@ String.prototype.hexDecode = function(){
 
 // console.log("testing".hexEncode().hexDecode());
 
-var delims = (function() {
+String.prototype.hashCode = function() {
+  var hash = 0, i, chr;
+  if (this.length === 0) return hash;
+  for (i = 0; i < this.length; i++) {
+    chr   = this.charCodeAt(i);
+    hash  = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return (Math.abs(hash)+'');
+};
+
+function constructDelims() {
 
   var password = "Hack GT Dare to Venture";
 
@@ -53,10 +65,12 @@ var delims = (function() {
   }
 
   strings = strings.map(function(string){
-    return encrypt(string,password);
+    return string.hashCode();
   });
 
   let alphabet = "ghijklmnopqrstuvwxyz";
+
+
 
   strings = strings.map(function(string){
     return string.split("").map(function(letter) {
@@ -64,17 +78,21 @@ var delims = (function() {
         return alphabet.charAt(index);
     }).join("");
   });
-  // console.log(strings);
 
-  var delims = [];
+  var deli = [];
   for(var i = 0; i < strings.length / 2; i+=2) {
-    delims[i/2] = {
+    deli[i/2] = {
       begin: strings[i],
       end: strings[i+1]
     }
   }
 
-})();
+  return deli;
+
+}
+
+var delims = constructDelims();
+console.log(delims);
 
 // var delims = [
 //   {begin:"xyz",end:"qrs"},
@@ -92,9 +110,9 @@ function getDelims(hash) {
 
 function encrypt(text, password){
   var encrypted = new sc.default(password).encrypt(text);
-  // del = getDelims(encrypted);
-  // return del.begin+encrypted+del.end;
-  return encrypted.hexEncode();
+  del = getDelims(encrypted);
+  // console.log(encrypted);
+  return del.begin+encrypted.hexEncode()+del.end;
 }
 
 function decrypt(text, password){
@@ -106,12 +124,16 @@ function decrypt(text, password){
     stripped = stripped.replace(delim.begin, "").replace(delim.end,"");
   });
 
-  console.log(stripped.hexDecode());
-
   var dec = new sc.default(password).decrypt(stripped.hexDecode());
   return dec;
 
 }
+
+// var msg = "  var dec = new sc.default(password).decrypt(stripped.hexDecode());";
+// var pass = "dsmflksdf";
+// var res = encrypt(msg,pass);
+// console.log(res);
+// console.log(decrypt(res,pass));
 
 // setTimeout(function(){
 //   console.log(delims);
@@ -435,3 +457,4 @@ module.exports.decrypt = decrypt;
 module.exports.encryptPath = encryptPath;
 module.exports.decryptPath = decryptPath;
 module.exports.delims = delims;
+module.exports.constructDelims = constructDelims;
