@@ -44,11 +44,7 @@ function assembleEncyptedCommand(args,password,offset) {
       }
     }
   }
-<<<<<<< HEAD
   // console.log(line)
-=======
-  console.log(line);
->>>>>>> 5c6846419df76d5b2c463cf8df765abe0a445b35
   return line;
 }
 
@@ -145,7 +141,7 @@ function other(args,password,shell) {
 
 
   shell.cd("..");
-    
+
   syncDecryptDirs(password);
 
 

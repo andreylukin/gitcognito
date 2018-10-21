@@ -44,14 +44,8 @@ function decryptFile(encryptedFile,key) {
         terminal: false
       });
     readFile
-<<<<<<< HEAD
-      .on('line', async function(line) {
-          // console.log({line, decrypt: decrypt(line, key)});
-          await this.output.write(`${decrypt(line, key)}\n`);
-=======
       .on('line', function(line) {
         this.output.write(`${decrypt(line, key)}\n`);
->>>>>>> 5c6846419df76d5b2c463cf8df765abe0a445b35
     })
       .on('close', function() {
     });
@@ -73,7 +67,7 @@ function getFiles(path) {
     , files = fs.readdirSync(path)
     , stats
     ;
-    
+
     files.forEach(function (file) {
     stats = fs.lstatSync(p.join(path, file));
     if(!set.has(file) && file.charAt(0) != ".") {
@@ -84,7 +78,7 @@ function getFiles(path) {
             }
     }
     });
-    
+
     return list;
 }
 
@@ -118,15 +112,6 @@ function syncEncryptDirs(password) {
     }
 }
 
-<<<<<<< HEAD
-
-async function syncDecryptDirs(password) {
-    const targetArray = await getFiles("./.git_repo/");
-    // console.log({targetArray});
-    for(let i = 0; i < targetArray.length; i +=1) {
-        await decryptFile(targetArray[i], password);
-    }
-=======
 // this works syncDecryptDirs("prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
 function syncDecryptDirs(password) {
     const targetArray =  getFiles("./.git_repo");
@@ -134,7 +119,6 @@ function syncDecryptDirs(password) {
     // for(let i = 0; i < targetArray.length; i +=1) {
     //     decryptFile(targetArray[i], password);
     // }
->>>>>>> 5c6846419df76d5b2c463cf8df765abe0a445b35
 }
 
 
