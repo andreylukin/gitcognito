@@ -127,21 +127,23 @@ function clone(args,shell) {
 
 function other(args,password,shell) {
 
-  syncEncryptDirs('./', './.git_repo/', password);
+  syncEncryptDirs(password).then(function() {
+    line = assembleEncyptedCommand(args,password,0);
 
-  line = assembleEncyptedCommand(args,password,0);
+    shell.cd("./.git_repo");
+  
+    var run_command = shell.exec(line);
+  
+    if(run_command.stdout.length > 0) {
+      decrypt_tokens(run_command.stdout,password);
+    } else if(run_command.stderr.length > 0) {
+      decrypt_tokens(run_command.stderr,password);
+    }
+  
+    syncDecryptDirs(password);
+  })
 
-  shell.cd("./.git_repo");
 
-  var run_command = shell.exec(line);
-
-  if(run_command.stdout.length > 0) {
-    decrypt_tokens(run_command.stdout,password);
-  } else if(run_command.stderr.length > 0) {
-    decrypt_tokens(run_command.stderr,password);
-  }
-
-  syncDecryptDirs("./", password);
 
 }
 

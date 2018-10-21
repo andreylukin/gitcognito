@@ -9,10 +9,13 @@ var mkdirp = require('mkdirp');
 const dirTree = require('directory-tree');
 var util = require('util');
 var path = require('path')
+var shell = require('shelljs');
+var recursive = require("recursive-readdir");
+var deasync =  require('deasync');
 
-
+// Given encryptFile("./files/some/ha.txt", "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
+// this works. it creates the directories, and stores the file into them.
 function encryptFile(fileToEncrypt,key) {
-  // console.log("encrypting",fileToEncrypt);
     let encryptedFile = encryptPath(fileToEncrypt, key);
     createDirs("./.git_repo/"+encryptedFile);
     const readFile = readline.createInterface({
@@ -29,15 +32,15 @@ function encryptFile(fileToEncrypt,key) {
     });
 }
 
+
+// this works no with the  decryptFile("./[[[[e4bbb2135b]]]]/[[[[f1bdb313]]]]/[[[[eab3f00250eb]]]]", "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
 function decryptFile(encryptedFile,key) {
-    let fileToEncrypt = decryptPath(encryptedFile, key);
+    let fileToEncrypt = decryptPath(encryptedFile.replace(".git_repo/", ""), key);
     createDirs(fileToEncrypt);
-    var parentDir = path.resolve(process.cwd(), '..');
-    // console.log("running in ",parentDir);
-    // console.log("Decrypting from ",encryptedFile," to ",fileToEncrypt);
+    // So far, the folders are created and the complete path is correctly decrypted from the name.
     const readFile = readline.createInterface({
-        input: fs.createReadStream("./" + encryptedFile),
-        output: fs.createWriteStream("../"+fileToEncrypt),
+        input: fs.createReadStream(encryptedFile), // THE TREE PASSES IN ALL OF THE PATHS ALREADY WITH .git_repo. NO NEED TO ADD THAT
+        output: fs.createWriteStream(fileToEncrypt),
         terminal: false
       });
     readFile
@@ -50,47 +53,37 @@ function decryptFile(encryptedFile,key) {
 }
 
 
+
 function createDirs(path) {
+    if(path.substring(0,2) == "./") path = path.slice(2); // if starts with './', dispose of the beginning;
     let dirs = path.split("/");
-    if(!(dirs.length == 1 && dirs[0] == "") && path.charAt(path.length - 1) == '/') {
-      var tar = dirs.splice(0, dirs.length - 2).join("/");
-        if(tar === undefined) {
-          // console.log("{"+tar+"}");
-          mkdirp.sync(tar);
-        }
-    } else {
-      var tar = path.split("/").splice(0, dirs.length - 1).join("/");
-      if(tar === undefined) {
-        // console.log("{"+tar+"}");
-        mkdirp.sync(tar);
-      }
-    }
+    if(dirs.length == 1) return;
+    shell.mkdir('-p', dirs.slice(0, -1).join("/")); // create a complete path, but dispose of last thing in array since thats file;
 }
 
 
-function getFiles(path) {
-  return getFilesHelper(dirTree(path), []);
+async function getFiles(path) {
+    // let arr;
+    return new Promise((resolve, reject) => {
+        recursive(path, ["node_modules", ".git",".gcn",".git_repo",".DS_Store"], function (err, files) {
+            resolve(files);
+        });
+    });
 }
 
 
-const ignore = ["node_modules", ".git",".gcn",".git_repo",".DS_Store"];
+// getFiles(".");
 
-function getFilesHelper(tree, array) {
-    if(tree.children == undefined || tree.children.length == 0 ) {
-        array.push(tree.path)
-        return array;
-    };
-    for(let i = 0; i< tree.children.length; i+=1) {
-        if(!ignore.includes(tree.children[i].name)) {
-            getFilesHelper(tree.children[i], array);
-        }
-    }
-    return array;
-}
+// (async function() {
+//     let x = await getFiles(".");
+//     console.log(x)
+// })
 
-function syncEncryptDirs(src, target, password) {
-    const srcSet = new Set(getFiles(src));
-    const targetMap = getFiles(target).reduce(function(a, b){
+async function syncEncryptDirs(password) {
+    let filesdot = await getFiles(".");
+    const srcSet = new Set(filesdot);
+    let files = await getFiles("./.git_repo/")
+    const targetMap = files.reduce(function(a, b){
         let stats = fs.statSync(b);
         a.set(b.split("/").slice(1).join("/"), new Date(util.inspect(stats.mtime)));
         return a;
@@ -107,22 +100,18 @@ function syncEncryptDirs(src, target, password) {
 
     if(targetMap.size != 0) {
         for(let [key, value] of targetMap ) {
-            // console.log(target+key);
-            fs.unlinkSync(target + key);
+            fs.unlinkSync(key);
         }
     }
 }
 
 
-function syncDecryptDirs(target, password) {
-    // const srcSet = new Set(getFiles(src));
-    // console.log(getFiles(target));
-    const targetArray = getFiles(target);
+async function syncDecryptDirs(password) {
+    const targetArray = await getFiles("./.git_repo/");
     for(let i = 0; i < targetArray.length; i +=1) {
         decryptFile(targetArray[i], password);
     }
 }
-// syncDecryptDirs(".git_repo/", "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
 
 
 module.exports.getFiles = getFiles;

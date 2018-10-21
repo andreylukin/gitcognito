@@ -3,7 +3,6 @@ const crypto = require('crypto'),
 
 
 function encrypt(text, password){
-  // console.log("{"+text+"}");
   var cipher = crypto.createCipher(algorithm,password)
   var crypted = cipher.update(text,'utf8','hex')
   crypted += cipher.final('hex');
@@ -41,6 +40,7 @@ function encryptPath(path, password) {
 
 
 function decryptPath(path, password) {
+  if(path.substring(0,2) == "./") path = path.slice(2);
   let returnString = '';
   let directories = path.split("/");
   for(let i = 0; i< directories.length; i+=1) {

@@ -20,11 +20,13 @@
   },
   "homepage": "https://github.com/andreylukin/gitcognito#readme",
   "dependencies": {
+    "deasync": "^0.1.13",
     "directory-tree": "^2.1.0",
     "generate-password": "^1.4.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "pty": "0.0.0",
+    "node-dir": "^0.1.17",
+    "recursive-readdir": "^2.2.2",
     "shelljs": "^0.8.2",
     "uuid": "^3.3.2"
   }
