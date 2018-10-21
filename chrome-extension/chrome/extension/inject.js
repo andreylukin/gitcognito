@@ -13,20 +13,14 @@ class InjectApp extends Component {
 
   buttonOnClick = () => {
 
-    // const classMap = {
-
-    // };
-    const bigDaddyDiv = document.getElementsByTagName('tbody');
+    //const bigDaddyDiv = document.getElementsByTagName('tbody');
     const allLinesOfCode = document.getElementsByTagName('tr');
-
-  
     let allTheCode = '';
     for (let i = 0; i < allLinesOfCode.length; i++) {
       //console.log(hljs.highlightAuto(allLinesOfCode[i].innerText));
       //allLinesOfCode[i].appendChild(tag);
       allTheCode += allLinesOfCode[i].innerText + '\n';
     }
-    
 
     // Find the name of the file and parse it's extension to determine the language (Assuming it's already been decrypted :p)
     const fileNameArray = document.getElementsByClassName('final-path')[0].innerText.split('.');
@@ -34,9 +28,9 @@ class InjectApp extends Component {
     //const codingLanguage = hljs.getLanguage(fileExtension);
     //console.log(codingLanguage);
 
-    const highlightedCode = hljs.highlight(fileExtension, allTheCode);
-    console.log(highlightedCode);
-    console.log(highlightedCode.value);
+    let highlightedCode = hljs.highlight(fileExtension, allTheCode);
+    //console.log(highlightedCode);
+    //console.log(highlightedCode.value);
 
 
     // This does not work please help
@@ -46,15 +40,24 @@ class InjectApp extends Component {
     //const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
     //console.log(decryptedData);
 
-    // let i = 1;
-    // let current = document.getElementById('LC' + i);
-    // while (current !== null || current !== undefined) {
-    //   const tag = document.createElement('span');
-    //   tag.className = 'pl-s';
-    //   tag.innerText = ' Sup Bitch.';
-    //   current.appendChild(tag);
-    //   current = document.getElementById('LC' + ++i);
-    // }
+    // Split our highlighted code based on newline characters into an array
+    highlightedCode = highlightedCode.value.split('\n');
+
+    // replace spans on webpage with new ones generated
+    let i = 1;
+    let currentParent = document.getElementById('LC' + i);
+    while (currentParent !== null && currentParent !== undefined) {
+      // Replace class variables, from hilight.js syntax to github syntax
+      highlightedCode[i] = highlightedCode[i].replace('hljs-string', 'pl-s');
+      highlightedCode[i] = highlightedCode[i].replace('hljs-keyword', 'pl-k');
+      highlightedCode[i] = highlightedCode[i].replace('hljs-number', 'pl-c1');
+      highlightedCode[i] = highlightedCode[i].replace('hljs-comment', 'pl-c');
+      //console.log(highlightedCode[i]);
+      if (highlightedCode[i] !== '') {
+        currentParent.innerHTML = highlightedCode[i];
+      }
+      currentParent = document.getElementById('LC' + ++i);
+    }
 
     this.setState({ isVisible: !this.state.isVisible });
   };
