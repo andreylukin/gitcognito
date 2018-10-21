@@ -52,8 +52,6 @@ function constructDelims() {
   }
   return delims;
 
-  console.log(delims);
-
 }
 
 var delims = constructDelims();

@@ -45,6 +45,7 @@ function decryptFile(encryptedFile,key) {
       });
     readFile
       .on('line', async function(line) {
+          console.log({line, decrypt: decrypt(line, key)});
           await this.output.write(`${decrypt(line, key)}\n`);
     })
       .on('close', function() {
@@ -57,7 +58,7 @@ function createDirs(path) {
     if(path.substring(0,2) == "./") path = path.slice(2); // if starts with './', dispose of the beginning;
     let dirs = path.split("/");
     if(dirs.length == 1) return;
-    shell.mkdir('-p', dirs.slice(0, -1).join("/")); // create a complete path, but dispose of last thing in array since thats file;
+    shell.mkdir('-p',  dirs.slice(0, -1).join("/")); // create a complete path, but dispose of last thing in array since thats file;
 }
 
 
@@ -99,7 +100,9 @@ async function syncEncryptDirs(password) {
 
     if(targetMap.size != 0) {
         for(let [key, value] of targetMap ) {
-            fs.unlinkSync(key);
+            if(fs.existsSync("./.git_repo/" + key)) {
+                await fs.unlinkSync("./.git_repo/" + key);
+            }
         }
     }
 }
@@ -107,10 +110,12 @@ async function syncEncryptDirs(password) {
 
 async function syncDecryptDirs(password) {
     const targetArray = await getFiles("./.git_repo/");
+    console.log({targetArray});
     for(let i = 0; i < targetArray.length; i +=1) {
-        decryptFile(targetArray[i], password);
+        await decryptFile(targetArray[i], password);
     }
 }
+
 
 
 module.exports.getFiles = getFiles;

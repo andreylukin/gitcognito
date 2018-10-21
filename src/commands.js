@@ -43,6 +43,7 @@ function assembleEncyptedCommand(args,password,offset) {
       }
     }
   }
+  console.log(line)
   return line;
 }
 
@@ -122,27 +123,33 @@ function clone(args,shell) {
 
 }
 
-function other(args,password,shell) {
+async function other(args,password,shell) {
 
-  syncEncryptDirs(password).then(function() {
-    line = assembleEncyptedCommand(args,password,0);
+  await syncEncryptDirs(password);
+  line = assembleEncyptedCommand(args,password,0);
 
-    shell.cd("./.git_repo");
+  shell.cd("./.git_repo");
+
+  var run_command = shell.exec(line);
+
+  if(run_command.stdout.length > 0) {
+    decrypt_tokens(run_command.stdout,password);
+  } else if(run_command.stderr.length > 0) {
+    decrypt_tokens(run_command.stderr,password);
+  }
   
-    var run_command = shell.exec(line);
-  
-    if(run_command.stdout.length > 0) {
-      decrypt_tokens(run_command.stdout,password);
-    } else if(run_command.stderr.length > 0) {
-      decrypt_tokens(run_command.stderr,password);
-    }
-  
-    syncDecryptDirs(password);
-  })
+
+  shell.cd("..");
+    
+  await syncDecryptDirs(password);
 
 
 
 }
+
+
+// syncDecryptDirs("prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
+
 
 module.exports = {
   init: init,
