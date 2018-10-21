@@ -5,7 +5,7 @@ const fs = require('fs');
 const uuidv1 = require('uuid/v1');
 
 var delims = constructDelims();
-console.log(delims);
+// console.log(delims);
 var front = delims.map(pair => pair.begin);
 var back = delims.map(pair => pair.end);
 var regex = new RegExp('('+front.join("|")+')(.*?)('+back.join("|")+')', 'g')
@@ -44,7 +44,7 @@ function assembleEncyptedCommand(args,password,offset) {
       }
     }
   }
-  console.log(line)
+  // console.log(line)
   return line;
 }
 

@@ -45,7 +45,7 @@ function decryptFile(encryptedFile,key) {
       });
     readFile
       .on('line', async function(line) {
-          console.log({line, decrypt: decrypt(line, key)});
+          // console.log({line, decrypt: decrypt(line, key)});
           await this.output.write(`${decrypt(line, key)}\n`);
     })
       .on('close', function() {
@@ -110,7 +110,7 @@ async function syncEncryptDirs(password) {
 
 async function syncDecryptDirs(password) {
     const targetArray = await getFiles("./.git_repo/");
-    console.log({targetArray});
+    // console.log({targetArray});
     for(let i = 0; i < targetArray.length; i +=1) {
         await decryptFile(targetArray[i], password);
     }
