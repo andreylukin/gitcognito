@@ -3,7 +3,7 @@ shell.config.silent = true;
 
 var parse = require('./src/commands.js');
 
-module.exports = () => {
+module.exports =  async () => {
 
   var args = require('minimist')(process.argv.slice(2));
 

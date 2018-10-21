@@ -83,21 +83,16 @@ function decrypt(text, password){
   var dec = decipher.update(stripped ,'hex','utf8')
   dec += decipher.final('utf8');
   return dec;
-  return stripped;
-
 }
 
 
 function encryptPath(path, password) {
-  let returnString = '';
+  let returnString = '/';
   let directories = path.split("/");
+
   for(let i = 0; i< directories.length; i+=1) {
     if(directories[i].length != 0) {
-      if(directories[i] == ".") {
-        returnString += ".";
-      } else {
-        returnString += encrypt(directories[i], password);
-      }
+      returnString += encrypt(directories[i], password);
       returnString += "/"
       if(i == directories.length - 1 && path.charAt(path.length - 1) != '/') {
         returnString = returnString.slice(0, -1);
