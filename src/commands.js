@@ -44,7 +44,7 @@ function assembleEncyptedCommand(args,password,offset) {
       }
     }
   }
-  // console.log(line)
+  console.log(line)
   return line;
 }
 

@@ -89,6 +89,7 @@ function getDelims(hash) {
 
 function encrypt(text, password){
   // var encrypted = new SimpleCrypto.default(password).encrypt(text);
+  // console.log(text);
   del = getDelims(text.hashCode());
   return del.begin+text.hexEncode()+del.end;
 }
