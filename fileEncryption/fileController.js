@@ -36,11 +36,8 @@ function encryptFile(fileToEncrypt,key) {
 function decryptFile(encryptedFile,key) {
     let fileToEncrypt = decryptPath(encryptedFile.replace(".git_repo/", ""), key);
     createDirs(fileToEncrypt);
-<<<<<<< HEAD
     // So far, the folders are created and the complete path is correctly decrypted from the name.
-=======
     var parentDir = path.resolve(process.cwd(), '..');
->>>>>>> f74834e0d91bc1c2a174fbbbced2106dda27c5a9
     const readFile = readline.createInterface({
         input: fs.createReadStream(encryptedFile), // THE TREE PASSES IN ALL OF THE PATHS ALREADY WITH .git_repo. NO NEED TO ADD THAT
         output: fs.createWriteStream(fileToEncrypt),
@@ -59,22 +56,8 @@ function decryptFile(encryptedFile,key) {
 function createDirs(path) {
     if(path.substring(0,2) == "./") path = path.slice(2); // if starts with './', dispose of the beginning;
     let dirs = path.split("/");
-<<<<<<< HEAD
     if(dirs.length == 1) return;
     shell.mkdir('-p', dirs.slice(0, -1).join("/")); // create a complete path, but dispose of last thing in array since thats file;
-=======
-    if(!(dirs.length == 1 && dirs[0] == "") && path.charAt(path.length - 1) == '/') {
-      var tar = dirs.splice(0, dirs.length - 2).join("/");
-        if(tar === undefined) {
-          mkdirp.sync(tar);
-        }
-    } else {
-      var tar = path.split("/").splice(0, dirs.length - 1).join("/");
-      if(tar === undefined) {
-        mkdirp.sync(tar);
-      }
-    }
->>>>>>> f74834e0d91bc1c2a174fbbbced2106dda27c5a9
 }
 
 
@@ -122,13 +105,8 @@ async function syncEncryptDirs(password) {
 }
 
 
-<<<<<<< HEAD
 async function syncDecryptDirs(password) {
     const targetArray = await getFiles("./.git_repo/");
-=======
-function syncDecryptDirs(target, password) {
-    const targetArray = getFiles(target);
->>>>>>> f74834e0d91bc1c2a174fbbbced2106dda27c5a9
     for(let i = 0; i < targetArray.length; i +=1) {
         decryptFile(targetArray[i], password);
     }
