@@ -1,4 +1,4 @@
-const {encrypt, decrypt, constructDelims} = require('../fileEncryption/encrypt');
+const {encrypt, decrypt, encryptPath, decryptPath, constructDelims} = require('../fileEncryption/encrypt');
 const {getFiles, encryptFile, syncEncryptDirs,syncDecryptDirs} = require('../fileEncryption/fileController');
 const {mkdirp} = require('mkdirp');
 const fs = require('fs');
@@ -126,30 +126,130 @@ function clone(args,shell) {
 
 function other(args,password,shell) {
 
-  syncEncryptDirs(password);
   line = assembleEncyptedCommand(args,password,0);
 
-  shell.cd("./.git_repo/");
 
-  var run_command = shell.exec(line);
-
-  if(run_command.stdout.length > 0) {
-    decrypt_tokens(run_command.stdout,password);
-  } else if(run_command.stderr.length > 0) {
-    decrypt_tokens(run_command.stderr,password);
-  }
+  shell.exec("rsync -r ./* ./temp_a --exclude ./.git_repo --exclude ./temp_a -v");
+  shell.cd('temp_a');
 
 
-  shell.cd("..");
+  var files = getFiles('.');
 
-  syncDecryptDirs(password);
+  files.forEach(function(file){
+    fs.readFile(file, function(err, buf) {
+      var data = (buf.toString().trim().split("\n").map(function(line){
+        return encrypt(line,password);
+      }).join("\n"));
+      fs.writeFile(file, data, function(err, data){
+          if (err) console.log(err);
+      });
+    });
+  });
+
+  setTimeout(function(){
+    // var files = getFiles('.');
+    // move_operations = []
+    // files.forEach(function(file){
+    //   var encrypted_path = encryptPath(file,password);
+    //   var old_path = ("/"+file).split("/");
+    //   var new_path = encrypted_path.split("/");
+    //   for(var j = 0; j < old_path.length; j++) {
+    //     move_operations.push({
+    //       old: old_path.slice(0,j+1).join("/"),
+    //       new: new_path.slice(0,j+1).join("/")
+    //     })
+    //   }
+    // });
+    // console.log(move_operations);
+    //
+    // move_operations.sort(function(a,b){
+    //   return b.old.length- a.old.length;
+    // });
+    //
+    // for(var k = 0; k < move_operations.length; k++) {
+    //     var command = "mv ."+move_operations[k].old+" ."+move_operations[k].new;
+    //     console.log(command);
+    //     shell.exec(command);
+    // }
+
+    // console.log(move_operations);
+    // var old_path = ("/"+file).split("/");
+    // var new_path = encrypted_path.split("/");
+    // for(var i = old_path.length-1; i >= 1; i--) {
+    //   var command = "mv ."+old_path.slice(0,i+1).join('/')+" ."+new_path.slice(0,i+1).join('/');
+    //   console.log(command);
+    //   shell.exec(command);
+    // }
+    //
+    shell.exec("rm -rf ./.git_repo/*");
+
+    shell.exec("rsync -r ../temp_a/* ../.git_repo -v");
+    shell.cd("..");
+    shell.exec("rm -rf ./temp_a");
+
+
+    // console.log(shell.exec("pwd"));
+
+    shell.cd("./.git_repo");
+    // console.log(shell.exec("pwd"));
+
+    var run_command = shell.exec(line);
+
+    if(run_command.stdout.length > 0) {
+      decrypt_tokens(run_command.stdout,password);
+    } else if(run_command.stderr.length > 0) {
+      decrypt_tokens(run_command.stderr,password);
+    }
+
+
+    shell.cd("..");
+    // console.log(shell.exec("pwd"));
+
+
+    shell.exec("rsync -r ./.git_repo/* ./temp_a --exclude -v");
+    shell.cd('temp_a');
+
+    // console.log(shell.exec("pwd"));
+    // console.log(shell.exec("ls"));
+
+    var falls = getFiles('.');
+    console.log(falls);
+
+
+      falls.forEach(function(file){
+        fs.readFile(file, function(err, buf) {
+          var data = (buf.toString().trim().split("\n").map(function(line){
+            return decrypt(line,password);
+          }).join("\n"));
+          fs.writeFile(file, data, function(err, data){
+              if (err) console.log(err);
+          });
+          console.log("decr write");
+        });
+      });
+
+    setTimeout(function(){
+
+
+      console.log(shell.exec('cd ..'));
+      console.log(shell.exec('pwd'));
+      // console.log(shell.exec('find  "./"  ! -name "temp_a" -print'));
+      shell.exec("rsync -r ../temp_a/* ../. -v");
+      // shell.cd("..");
+      shell.exec("rm -rf ../temp_a");
+
+
+
+    },1000);
+
+
+
+
+  },1000);
 
 
 
 }
-
-
-// syncDecryptDirs("prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
 
 
 module.exports = {

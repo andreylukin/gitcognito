@@ -82,6 +82,7 @@ function getFiles(path) {
     return list;
 }
 
+// console.log(getFiles("."));
 
 // fucking works syncEncryptDirs("prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
 function syncEncryptDirs(password) {
