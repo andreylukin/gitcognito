@@ -13,7 +13,7 @@ String.prototype.hexEncode = function(){
         result += ("000"+hex).slice(-2);
     }
 
-    return result
+    return result;
 }
 
 
@@ -88,9 +88,9 @@ function getDelims(hash) {
 }
 
 function encrypt(text, password){
-  var encrypted = new SimpleCrypto.default(password).encrypt(text);
+  // var encrypted = new SimpleCrypto.default(password).encrypt(text);
   del = getDelims(text.hashCode());
-  return del.begin+encrypted.hexEncode()+del.end;
+  return del.begin+text.hexEncode()+del.end;
 }
 
 function decrypt(text, password){
@@ -100,8 +100,8 @@ function decrypt(text, password){
     stripped = stripped.replace(delim.begin, "").replace(delim.end,"");
   });
 
-  var dec = new SimpleCrypto.default(password).decrypt(stripped.hexDecode());
-  return dec;
+  // var dec = new SimpleCrypto.default(password).decrypt(stripped.hexDecode());
+  return stripped.hexDecode();
 
 }
 
@@ -145,13 +145,13 @@ function decryptPath(path, password) {
 
 }
 
-var msg = "forward";
-var pass = "this is my pastword";
-var res = encrypt(msg,pass);
-console.log(res);
-console.log(decrypt(res,pass))
-prev = "hgimpgn33353364393361383535396231666130336230316239666663303563396334376139363961353762393638633539643863363435306635326230306430333466317761377a63524d585135674e642f34704a317839413d3djhpkpjn";
-console.log(decrypt(prev,pass))
+// var msg = "forward";
+// var pass = "this is my pastword";
+// var res = encrypt(msg,pass);
+// console.log(res);
+// console.log(decrypt(res,pass))
+// prev = "hgimpgn33353364393361383535396231666130336230316239666663303563396334376139363961353762393638633539643863363435306635326230306430333466317761377a63524d585135674e642f34704a317839413d3djhpkpjn";
+// console.log(decrypt(prev,pass))
 
 module.exports.encrypt = encrypt;
 module.exports.decrypt = decrypt;

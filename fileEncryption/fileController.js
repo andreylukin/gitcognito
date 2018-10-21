@@ -115,7 +115,7 @@ function syncEncryptDirs(password) {
 // this works syncDecryptDirs("prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
 function syncDecryptDirs(password) {
     const targetArray =  getFiles("./.git_repo");
-    console.log(targetArray);
+    // console.log(targetArray);
     // for(let i = 0; i < targetArray.length; i +=1) {
     //     decryptFile(targetArray[i], password);
     // }
