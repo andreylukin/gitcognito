@@ -74,9 +74,7 @@ var delims = (function() {
     }
   }
 
-  return delims;
-
-})()
+})();
 
 // var delims = [
 //   {begin:"xyz",end:"qrs"},
