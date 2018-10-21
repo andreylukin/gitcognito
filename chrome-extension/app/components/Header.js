@@ -1,6 +1,10 @@
 import React, { PropTypes, Component } from 'react';
 import TodoTextInput from './TodoTextInput';
 
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
+import CryptoJS from 'crypto-js';
+
 export default class Header extends Component {
 
   static propTypes = {
