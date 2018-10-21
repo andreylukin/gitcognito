@@ -1,8 +1,13 @@
-const {encrypt, decrypt} = require('../fileEncryption/encrypt');
+const {encrypt, decrypt, delims} = require('../fileEncryption/encrypt');
 const {getFiles, encryptFile, syncEncryptDirs,syncDecryptDirs} = require('../fileEncryption/fileController');
 const {mkdirp} = require('mkdirp');
 const fs = require('fs');
 const uuidv1 = require('uuid/v1');
+
+
+var front = delims.map(pair => pair.begin);
+var back = delims.map(pair => pair.end);
+var regex = new RegExp('('+front.join("|")+')(.*?)('+back.join("|")+')', 'g')
 
 function assembleEncyptedCommand(args,password,offset) {
   var unencrypted = args._.splice(0,offset+1).join(" ");
@@ -38,7 +43,6 @@ function assembleEncyptedCommand(args,password,offset) {
       }
     }
   }
-  // console.log("{"+line+"}");
   return line;
 }
 
@@ -54,30 +58,23 @@ function makeDotFile(password) {
 
 function decrypt_tokens(string,password) {
 
-  var regex = /\b[Gg]it\b/g;
-  string = string.replace(regex, "gcn");
+  var git_reg = /\b[Gg]it\b/g;
+  string = string.replace(git_reg, "gcn");
 
-  let begin = "[[[[";
-  let end = "]]]]";
-  var array = string.split(begin);
-  process.stdout.write(array.map(function(item){
-    var again = item.split(end);
-    if(again.length > 1) {
-      again[0] = decrypt(again[0],password);
+  var components = string.split(regex);
+  for(var i=0; i < components.length; i++) {
+    if(front.indexOf(components[i]) >= 0) {
+      components[i] = "";
+      components[i+1] = decrypt(components[i+1],password);
+      components[i+2] = "";
+      i+=2;
     }
-    return again.join("");
-  }).join(""));
-
-}
-
-function decrypt_token(string, beginToken, endToken, password) {
-  if(string.split(beginToken).length > 1) {
-    let encodedString = string.split(beginToken)[1].split(endToken)[0]
-    return decrypt(encodedString, password);
-  } else {
-    return string;
   }
+
+  process.stdout.write(components.join(""));
+
 }
+
 
 function init(args) {
 

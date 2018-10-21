@@ -12,7 +12,6 @@ var path = require('path')
 
 
 function encryptFile(fileToEncrypt,key) {
-  // console.log("encrypting",fileToEncrypt);
     let encryptedFile = encryptPath(fileToEncrypt, key);
     createDirs("./.git_repo/"+encryptedFile);
     const readFile = readline.createInterface({
@@ -25,7 +24,6 @@ function encryptFile(fileToEncrypt,key) {
           await this.output.write(`${encrypt(line, key)}\n`);
     })
       .on('close', function() {
-        // console.log(`Created "${this.output.path}"`);
     });
 }
 
@@ -33,8 +31,6 @@ function decryptFile(encryptedFile,key) {
     let fileToEncrypt = decryptPath(encryptedFile, key);
     createDirs(fileToEncrypt);
     var parentDir = path.resolve(process.cwd(), '..');
-    // console.log("running in ",parentDir);
-    // console.log("Decrypting from ",encryptedFile," to ",fileToEncrypt);
     const readFile = readline.createInterface({
         input: fs.createReadStream("./" + encryptedFile),
         output: fs.createWriteStream("../"+fileToEncrypt),
@@ -45,7 +41,6 @@ function decryptFile(encryptedFile,key) {
           await this.output.write(`${decrypt(line, key)}\n`);
     })
       .on('close', function() {
-        // console.log(`Created "${this.output.path}"`);
     });
 }
 
@@ -55,13 +50,11 @@ function createDirs(path) {
     if(!(dirs.length == 1 && dirs[0] == "") && path.charAt(path.length - 1) == '/') {
       var tar = dirs.splice(0, dirs.length - 2).join("/");
         if(tar === undefined) {
-          // console.log("{"+tar+"}");
           mkdirp.sync(tar);
         }
     } else {
       var tar = path.split("/").splice(0, dirs.length - 1).join("/");
       if(tar === undefined) {
-        // console.log("{"+tar+"}");
         mkdirp.sync(tar);
       }
     }
@@ -115,14 +108,11 @@ function syncEncryptDirs(src, target, password) {
 
 
 function syncDecryptDirs(target, password) {
-    // const srcSet = new Set(getFiles(src));
-    // console.log(getFiles(target));
     const targetArray = getFiles(target);
     for(let i = 0; i < targetArray.length; i +=1) {
         decryptFile(targetArray[i], password);
     }
 }
-// syncDecryptDirs(".git_repo/", "prXYpROZmmZadQTVrpOu9nDRqXu2MajbxnHPOXbHUDdHbhC6PNvlCZMLSMrSfLVu");
 
 
 module.exports.getFiles = getFiles;
