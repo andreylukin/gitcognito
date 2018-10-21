@@ -44,7 +44,11 @@ function assembleEncyptedCommand(args,password,offset) {
       }
     }
   }
+<<<<<<< HEAD
   // console.log(line)
+=======
+  console.log(line);
+>>>>>>> 5c6846419df76d5b2c463cf8df765abe0a445b35
   return line;
 }
 
@@ -96,7 +100,7 @@ function init(args) {
   }
 
   makeDotFile(password);
-  mkdirp.sync('.git_repo');
+  mkdirp.sync('.git_repo/');
 
 }
 
@@ -116,7 +120,7 @@ function clone(args,shell) {
   shell.exec(command);
   var dir_name = shell.exec("ls").stdout.replace(/(\r\n\t|\n|\r\t)/gm,"");
   makeDotFile(password);
-  shell.exec("mv * .git_repo");
+  shell.exec("mv * .git_repo/");
   shell.cd("..");
   shell.mv([temp_name],dir_name);
 
@@ -124,12 +128,12 @@ function clone(args,shell) {
 
 }
 
-async function other(args,password,shell) {
+function other(args,password,shell) {
 
-  await syncEncryptDirs(password);
+  syncEncryptDirs(password);
   line = assembleEncyptedCommand(args,password,0);
 
-  shell.cd("./.git_repo");
+  shell.cd("./.git_repo/");
 
   var run_command = shell.exec(line);
 
@@ -141,8 +145,8 @@ async function other(args,password,shell) {
 
 
   shell.cd("..");
-
-  await syncDecryptDirs(password);
+    
+  syncDecryptDirs(password);
 
 
 
