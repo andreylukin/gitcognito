@@ -126,10 +126,6 @@ function decrypt(text, password){
 
   var dec = new sc.default(password).decrypt(stripped.hexDecode());
   return dec;
-<<<<<<< HEAD
-=======
-
->>>>>>> f9a3ab0d752822f6ee403c45f651fa68347e64a8
 }
 
 // var msg = "  var dec = new sc.default(password).decrypt(stripped.hexDecode());";
