@@ -24,6 +24,8 @@
     "generate-password": "^1.4.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "shelljs": "^0.8.2"
+    "pty": "0.0.0",
+    "shelljs": "^0.8.2",
+    "uuid": "^3.3.2"
   }
 }
