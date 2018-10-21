@@ -41,6 +41,7 @@ module.exports =  async () => {
     }
     var password = jsonContent.password;
 
+
     // This is a gcn repo and it is initialized. Parse commands
     parse.other(args,password,shell)
 
